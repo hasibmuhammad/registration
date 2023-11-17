@@ -1,6 +1,84 @@
+import auth from "../../firebase/config";
+import {
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const email = useRef(null);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // reseting the error state
+    setError("");
+    setSuccess("");
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    const emailReg = /[a-z0-9]+@[a-z]+.[a-z]{2,3}/;
+    if (!(email && emailReg.test(email))) {
+      setError("Pleaes Enter a valid email!");
+      return;
+    }
+    if (!(password.length >= 6)) {
+      setError("Password must be at least 6 characters!");
+      return;
+    }
+
+    if (!/[a-z]/g.test(password)) {
+      setError("Password must includes lowercase character");
+      return;
+    }
+    if (!/[A-Z]/g.test(password)) {
+      setError("Password must includes uppercase character");
+      return;
+    }
+    if (!/[0-9]/g.test(password)) {
+      setError("Password must includes numeric value");
+      return;
+    }
+
+    // All the above condition is satisfied: now login with the newly created user
+    signInWithEmailAndPassword(auth, email, password)
+      .then((res) => {
+        console.log(res.user);
+        if (!res.user.emailVerified) {
+          sendEmailVerification(res.user)
+            .then(() => {
+              setSuccess("Verification email has sent to you!");
+            })
+            .catch((error) => setError(error.message));
+          setError("You are not verified. Check your email to verify!");
+          return;
+        } else {
+          setSuccess("You have logged in successfully!");
+        }
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
+  };
+
+  const handleResetPassword = () => {
+    setError("");
+
+    if (!email.current.value) {
+      setError("You must provide email to reset password!");
+      return;
+    }
+
+    // send password reset email
+    sendPasswordResetEmail(auth, email.current.value)
+      .then(() => setSuccess("Password reset email sent. Check Email."))
+      .catch((error) => setError(error.message));
+  };
   return (
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content flex-col lg:flex-row-reverse">
@@ -13,12 +91,14 @@ const Login = () => {
           </p>
         </div>
         <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-          <form className="card-body">
+          <form className="card-body" onSubmit={handleLogin}>
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Email</span>
               </label>
               <input
+                ref={email}
+                name="email"
                 type="email"
                 placeholder="email"
                 className="input input-bordered"
@@ -30,12 +110,13 @@ const Login = () => {
                 <span className="label-text">Password</span>
               </label>
               <input
+                name="password"
                 type="password"
                 placeholder="password"
                 className="input input-bordered"
                 required
               />
-              <label className="label">
+              <label className="label" onClick={handleResetPassword}>
                 <a href="#" className="label-text-alt link link-hover">
                   Forgot password?
                 </a>
@@ -49,6 +130,8 @@ const Login = () => {
                 </Link>
               </p>
             </div>
+            {error && <p className="text-error">{error}</p>}
+            {success && <p className="text-success">{success}</p>}
             <div className="form-control mt-6">
               <button className="btn btn-primary">Login</button>
             </div>

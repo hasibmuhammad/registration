@@ -12,6 +12,7 @@ const Register = () => {
 
     // reseting the error state
     setError("");
+    setSuccess("");
 
     const email = e.target.email.value;
     const password = e.target.password.value;
@@ -53,6 +54,7 @@ const Register = () => {
       })
       .catch((error) => setError(error.message));
   };
+
   return (
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content flex-col lg:flex-row-reverse">
@@ -108,8 +110,8 @@ const Register = () => {
               </p>
             </div>
 
-            {success && <p className="text-success">{success}</p>}
-            {error && <p className="text-error">{error}</p>}
+            {success && !error && <p className="text-success">{success}</p>}
+            {error && !success && <p className="text-error">{error}</p>}
 
             <div className="form-control mt-6">
               <button type="submit" className="btn btn-primary">
