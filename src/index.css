@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a.active {
+  color: blue;
+  border-bottom: 3px solid blue;
+  font-weight: bold;
+}
