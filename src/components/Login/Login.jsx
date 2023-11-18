@@ -5,11 +5,13 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useContext, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 
 const Login = () => {
-  const { signIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { signIn, signInWithGoogle, signInWithGithub } =
+    useContext(AuthContext);
 
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -62,6 +64,7 @@ const Login = () => {
           return;
         } else {
           setSuccess("You have logged in successfully!");
+          navigate("/dashboard");
         }
       })
       .catch((error) => {
@@ -81,6 +84,24 @@ const Login = () => {
     sendPasswordResetEmail(auth, email.current.value)
       .then(() => setSuccess("Password reset email sent. Check Email."))
       .catch((error) => setError(error.message));
+  };
+
+  const handleGoogleLogin = () => {
+    signInWithGoogle()
+      .then((res) => {
+        console.log(res.user);
+        navigate("/dashboard");
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const handleGithubLogin = () => {
+    signInWithGithub()
+      .then((res) => {
+        console.log(res.user);
+        navigate("/dashboard");
+      })
+      .catch((error) => console.error(error));
   };
   return (
     <div className="hero min-h-screen bg-base-200">
@@ -139,6 +160,22 @@ const Login = () => {
               <button className="btn btn-primary">Login</button>
             </div>
           </form>
+
+          <div className="text-center">OR</div>
+          <div className="flex justify-center gap-4 pb-10">
+            <button
+              onClick={handleGoogleLogin}
+              className="btn btn-outline btn-sm mt-3"
+            >
+              Google
+            </button>
+            <button
+              onClick={handleGithubLogin}
+              className="btn btn-outline btn-sm mt-3"
+            >
+              Github
+            </button>
+          </div>
         </div>
       </div>
     </div>
