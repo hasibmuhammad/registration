@@ -8,12 +8,15 @@ const Navigation = () => {
 
   const menus = (
     <>
-      <NavLink to={"/register"}>
-        <li>Register</li>
-      </NavLink>
-      <NavLink to={"/login"}>
-        <li>Login</li>
-      </NavLink>
+      <li>
+        <NavLink to={"/register"}>Register</NavLink>
+      </li>
+      <li>
+        <NavLink to={"/login"}>Login</NavLink>
+      </li>
+      <li>
+        <NavLink to={"/orders"}>Orders</NavLink>
+      </li>
     </>
   );
 
