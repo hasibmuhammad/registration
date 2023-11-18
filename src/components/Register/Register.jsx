@@ -1,9 +1,9 @@
-import { useState } from "react";
-import auth from "../../firebase/config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../providers/AuthProvider";
 
 const Register = () => {
+  const { createUser } = useContext(AuthContext);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -46,7 +46,7 @@ const Register = () => {
     }
 
     // All the above condition is satisfied: now create user with the email and password to login
-    createUserWithEmailAndPassword(auth, email, password)
+    createUser(email, password)
       .then((res) => {
         if (res.user) {
           setSuccess("Congratulations! You have created Account sucessfully.");

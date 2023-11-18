@@ -4,10 +4,13 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../providers/AuthProvider";
 
 const Login = () => {
+  const { signIn } = useContext(AuthContext);
+
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const email = useRef(null);
@@ -46,7 +49,7 @@ const Login = () => {
     }
 
     // All the above condition is satisfied: now login with the newly created user
-    signInWithEmailAndPassword(auth, email, password)
+    signIn(email, password)
       .then((res) => {
         console.log(res.user);
         if (!res.user.emailVerified) {
